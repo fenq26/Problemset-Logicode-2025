@@ -1,0 +1,72 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define int long long
+
+signed main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+
+    vector<vector<int>> adj(n + 1);
+    vector<int> parent(n + 1), depth(n + 1), jump(n + 1);
+    
+    for (int i = 0, u, v; i < n - 1; i++) {
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+    // BFS setup
+    queue<int> q;
+    q.push(1);
+    parent[1] = 0;
+    depth[1] = 0;
+    
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        for (int v : adj[u]) {
+            if (v != parent[u]) {
+                parent[v] = u;
+                depth[v] = depth[u] + 1;
+                q.push(v);
+            }
+        }
+    }
+    
+    for (int i = 1; i <= n; i++) jump[i] = i;
+    jump[1] = 0;
+    
+    auto find_compressed = [&](auto&& self, int x) -> int {
+        if (jump[x] != x) jump[x] = self(self, jump[x]);
+        return jump[x];
+    };
+    
+    vector<bool> visited(n + 1, false);
+    visited[1] = true;
+    
+    int max_depth = 0, total_new = 0;
+    cout << "0 ";
+    
+    for (int i = 2; i <= n; i++) {
+        max_depth = max(max_depth, depth[i]);
+        
+        int new_nodes = 0;
+        int current = i;
+        
+        while (!visited[current]) {
+            visited[current] = true;
+            new_nodes++;
+            jump[current] = parent[current];
+            current = find_compressed(find_compressed, parent[current]);
+        }
+        
+        total_new += new_nodes;
+        cout << 2 * total_new - max_depth << " \n"[i == n];
+    }
+
+    return 0;
+}
