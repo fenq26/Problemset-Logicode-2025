@@ -1,0 +1,52 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+    int n;
+    long long m;
+    cin >> n >> m;
+    
+    vector<long long> pref(n + 1);
+    for (int i = 1; i <= n; i++) {
+        long long x; 
+        cin >> x;
+        pref[i] = pref[i - 1] + x;
+    }
+    
+    deque<int> mn, mx;
+    int left = 0, ans = 0;
+    
+    for (int r = 0; r <= n; r++) {
+        while (!mn.empty() && pref[mn.back()] > pref[r]) mn.pop_back();
+        mn.push_back(r);
+        
+        while (!mx.empty() && pref[mx.back()] < pref[r]) mx.pop_back();
+        mx.push_back(r);
+        
+        while (true) {
+            while (!mn.empty() && mn.front() < left) mn.pop_front();
+            while (!mx.empty() && mx.front() < left) mx.pop_front();
+            
+            if (mn.empty() || mx.empty()) break;
+            
+            if (mn.front() != left) {
+                left = mn.front();
+                continue;
+            }
+            
+            if (pref[mx.front()] - pref[mn.front()] > m) {
+                left++;
+                continue;
+            }
+            
+            break;
+        }
+        
+        ans = max(ans, r - left);
+    }
+    
+    cout << ans << '\n';
+}
