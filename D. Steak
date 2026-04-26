@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N, K;
+    cin >> N >> K;
+
+    vector<int> state(K + 1, INF);
+    state[0] = 0;
+
+    for (int i = 0; i < N; i++) {
+        int L, R;
+        cin >> L >> R;
+
+        vector<int> candidate(K + 1, INF);
+
+        for (int j = 0; j <= K; j++) {
+            if (state[j] != INF)
+                candidate[j] = state[j] + 2;
+        }
+
+        deque<int> mono;
+        int ptr = 0;
+
+        for (int j = K; j >= 0; j--) {
+            while (ptr <= K && ptr <= R - j) {
+                while (!mono.empty() && state[mono.back()] >= state[ptr])
+                    mono.pop_back();
+                mono.push_back(ptr);
+                ptr++;
+            }
+
+            while (!mono.empty() && mono.front() < L - j)
+                mono.pop_front();
+
+            if (!mono.empty() && state[mono.front()] != INF) {
+                candidate[j] = min(candidate[j], state[mono.front()] + 1);
+            }
+        }
+
+        for (int j = 0; j <= K; j++) {
+            state[j] = min(state[j], candidate[j]);
+        }
+    }
+
+    if (state[K] <= 2 * N + 1) {
+        cout << "Iya\n" << state[K];
+    } else {
+        cout << "Tidak\n";
+    }
+}
