@@ -1,1 +1,44 @@
+#include <bits/stdc++.h>
+using namespace std;
 
+#define fi first
+#define se second 
+#define pb push_back
+#define int long long
+#define INF (int)1e9
+#define MOD (int)(1e9 + 7)
+
+long long sq(long long a, long long b) {
+    return (a - b) * (a - b);
+} 
+
+void solve() {
+    int n; 
+    cin >> n; 
+    
+    vector<int> p(n), v(n);
+    for(int i = 0; i < n; i++) {
+        int x; 
+        cin >> x;
+        p[i] = v[i] = x; 
+    }
+    
+    sort(v.begin(), v.end());
+    
+    for(int i = 0; i < n; i++) {
+        int l = lower_bound(v.begin(), v.end(), p[i]) - v.begin() + 1; 
+        int r = upper_bound(v.begin(), v.end(), p[i]) - v.begin();      
+        
+        cout << l << " " << r << '\n';  
+    }
+}
+
+signed main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+    int t = 1;
+    while(t--) solve();
+    
+    return 0;
+}
